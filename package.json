@@ -1,0 +1,29 @@
+{
+  "name": "poptrack-api",
+  "version": "1.0.0",
+  "main": "app.ts",
+  "scripts": {
+    "prod": "cross-env NODE_ENV=prod nodemon --exec ts-node src/server.ts",
+    "local": "cross-env NODE_ENV=local nodemon --exec ts-node src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Reymark Labrador",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "^24.0.10",
+    "concurrently": "^9.2.0",
+    "cross-env": "^7.0.3",
+    "dotenv-cli": "^8.0.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  }
+}
