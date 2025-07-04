@@ -13,12 +13,8 @@ const connectDB = async (): Promise<void> => {
       throw new Error("DB_NAME environment variable is required")
     }
 
-    // Construct connection string with database name
-    const connectionString = `${mongoUri}/${dbName}`
-
-    const conn = await mongoose.connect(connectionString)
+    const conn = await mongoose.connect(mongoUri)
     console.log(`MongoDB connected: ${conn.connection.host}`)
-    console.log(`Database: ${dbName}`)
   } catch (error) {
     console.error("MongoDB connection failed:", error)
     process.exit(1) // Exit process with failure
