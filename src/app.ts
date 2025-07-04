@@ -1,9 +1,14 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application, Request, Response } from "express"
 
-const app: Application = express();
+import propertyRoutes from "./routes/property.routes"
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('API is running');
-});
+const app: Application = express()
+app.use(express.json())
 
-export default app;
+app.get("/", (req: Request, res: Response) => {
+  res.send("API is running")
+})
+
+app.use("/api/properties", propertyRoutes)
+
+export default app
