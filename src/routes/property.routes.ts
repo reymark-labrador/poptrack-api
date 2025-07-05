@@ -68,9 +68,33 @@ const router = Router()
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Property'
- *         total:
- *           type: number
- *           description: Total count of properties
+ *         pagination:
+ *           type: object
+ *           properties:
+ *             page:
+ *               type: number
+ *               description: Current page number
+ *               example: 1
+ *             limit:
+ *               type: number
+ *               description: Number of items per page
+ *               example: 10
+ *             total:
+ *               type: number
+ *               description: Total count of properties
+ *               example: 150
+ *             totalPages:
+ *               type: number
+ *               description: Total number of pages
+ *               example: 15
+ *             hasNext:
+ *               type: boolean
+ *               description: Whether there is a next page
+ *               example: true
+ *             hasPrevious:
+ *               type: boolean
+ *               description: Whether there is a previous page
+ *               example: false
  */
 
 /**

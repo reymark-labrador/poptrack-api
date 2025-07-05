@@ -3,6 +3,7 @@ import Lead from "../models/Lead"
 import Client from "../models/Client"
 import Viewing from "../models/Viewing"
 import mongoose from "mongoose"
+import { createPaginatedResponse } from "../utils/pagination"
 
 export const submitLead = async (req: Request, res: Response) => {
   const { name, email, phone, message, property } = req.body
@@ -11,9 +12,18 @@ export const submitLead = async (req: Request, res: Response) => {
   res.status(201).json({ message: "Lead submitted", lead })
 }
 
-export const getLeads = async (_req: Request, res: Response) => {
-  const leads = await Lead.find().populate("property")
-  res.json(leads)
+export const getLeads = async (req: Request, res: Response) => {
+  const result = await createPaginatedResponse(
+    req,
+    Lead,
+    {},
+    {
+      populate: "property",
+      sort: { submittedAt: -1 }, // Sort by newest first
+    }
+  )
+
+  res.json(result)
 }
 
 export const convertLeadToClientAndSchedule = async (

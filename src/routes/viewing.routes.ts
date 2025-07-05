@@ -46,19 +46,70 @@ const router = Router()
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     ViewingResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Viewing'
+ *         pagination:
+ *           type: object
+ *           properties:
+ *             page:
+ *               type: number
+ *               description: Current page number
+ *               example: 1
+ *             limit:
+ *               type: number
+ *               description: Number of items per page
+ *               example: 10
+ *             total:
+ *               type: number
+ *               description: Total count of viewings
+ *               example: 25
+ *             totalPages:
+ *               type: number
+ *               description: Total number of pages
+ *               example: 3
+ *             hasNext:
+ *               type: boolean
+ *               description: Whether there is a next page
+ *               example: true
+ *             hasPrevious:
+ *               type: boolean
+ *               description: Whether there is a previous page
+ *               example: false
+ */
+
+/**
+ * @swagger
  * /api/viewings:
  *   get:
- *     summary: Get all viewings
+ *     summary: Get all viewings with pagination
  *     tags: [Viewings]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: number
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: number
+ *           default: 10
+ *         description: Items per page
  *     responses:
  *       200:
  *         description: List of viewings
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Viewing'
+ *               $ref: '#/components/schemas/ViewingResponse'
  */
 router.get("/", asyncHandler(getAllViewings))
 

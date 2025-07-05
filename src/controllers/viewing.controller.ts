@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import Viewing from "../models/Viewing"
+import { createPaginatedResponse } from "../utils/pagination"
 
 export const createViewing = async (req: Request, res: Response) => {
   const { client, property, scheduledAt } = req.body
@@ -19,7 +20,16 @@ export const updateViewing = async (req: Request, res: Response) => {
   res.json(viewing)
 }
 
-export const getAllViewings = async (_req: Request, res: Response) => {
-  const viewings = await Viewing.find().populate("client").populate("property")
-  res.json(viewings)
+export const getAllViewings = async (req: Request, res: Response) => {
+  const result = await createPaginatedResponse(
+    req,
+    Viewing,
+    {},
+    {
+      populate: ["client", "property"],
+      sort: { scheduledAt: 1 }, // Sort by scheduled date (earliest first)
+    }
+  )
+
+  res.json(result)
 }

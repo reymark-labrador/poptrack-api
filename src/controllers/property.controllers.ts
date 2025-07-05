@@ -1,18 +1,10 @@
 import { Request, Response } from "express"
 import Property from "../models/Property"
+import { createPaginatedResponse } from "../utils/pagination"
 
 export const getProperties = async (req: Request, res: Response) => {
-  const {
-    type,
-    city,
-    minPrice,
-    maxPrice,
-    bedrooms,
-    bathrooms,
-    amenities,
-    page = 1,
-    limit = 10,
-  } = req.query
+  const { type, city, minPrice, maxPrice, bedrooms, bathrooms, amenities } =
+    req.query
 
   const query: any = {}
   if (type) query.type = type
@@ -29,12 +21,11 @@ export const getProperties = async (req: Request, res: Response) => {
     query.amenities = { $all: list }
   }
 
-  const properties = await Property.find(query)
-    .skip((+page - 1) * +limit)
-    .limit(+limit)
+  const result = await createPaginatedResponse(req, Property, query, {
+    sort: { createdAt: -1 }, // Sort by newest first
+  })
 
-  const total = await Property.countDocuments(query)
-  res.json({ data: properties, total })
+  res.json(result)
 }
 
 export const getPropertyById = async (req: Request, res: Response) => {

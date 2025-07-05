@@ -77,19 +77,70 @@ router.post("/", asyncHandler(submitLead))
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     LeadResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Lead'
+ *         pagination:
+ *           type: object
+ *           properties:
+ *             page:
+ *               type: number
+ *               description: Current page number
+ *               example: 1
+ *             limit:
+ *               type: number
+ *               description: Number of items per page
+ *               example: 10
+ *             total:
+ *               type: number
+ *               description: Total count of leads
+ *               example: 50
+ *             totalPages:
+ *               type: number
+ *               description: Total number of pages
+ *               example: 5
+ *             hasNext:
+ *               type: boolean
+ *               description: Whether there is a next page
+ *               example: true
+ *             hasPrevious:
+ *               type: boolean
+ *               description: Whether there is a previous page
+ *               example: false
+ */
+
+/**
+ * @swagger
  * /api/leads:
  *   get:
- *     summary: Get all leads
+ *     summary: Get all leads with pagination
  *     tags: [Leads]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: number
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: number
+ *           default: 10
+ *         description: Items per page
  *     responses:
  *       200:
  *         description: List of leads
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Lead'
+ *               $ref: '#/components/schemas/LeadResponse'
  */
 router.get("/", asyncHandler(getLeads))
 
