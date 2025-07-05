@@ -6,6 +6,8 @@ import {
   createProperty,
   updateProperty,
   deleteProperty,
+  archiveProperty,
+  unarchiveProperty,
 } from "../controllers/property.controllers"
 
 const router = Router()
@@ -18,6 +20,9 @@ const router = Router()
  *       type: object
  *       required: [title, price, location]
  *       properties:
+ *         _id:
+ *           type: string
+ *           example: "60d0fe4f5311236168a109ca"
  *         title:
  *           type: string
  *           example: "Modern Downtown Apartment"
@@ -262,5 +267,63 @@ router.put("/:id", asyncHandler(updateProperty))
  *         description: Property not found
  */
 router.delete("/:id", asyncHandler(deleteProperty))
+
+/**
+ * @swagger
+ * /api/properties/{id}/archive:
+ *   patch:
+ *     summary: Archive a property by ID
+ *     tags: [Properties]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Property ID
+ *     responses:
+ *       200:
+ *         description: Property archived
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Property archived
+ *       404:
+ *         description: Property not found
+ */
+router.patch("/:id/archive", asyncHandler(archiveProperty))
+
+/**
+ * @swagger
+ * /api/properties/{id}/unarchive:
+ *   patch:
+ *     summary: Unarchive a property by ID
+ *     tags: [Properties]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Property ID
+ *     responses:
+ *       200:
+ *         description: Property unarchived
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Property unarchived
+ *       404:
+ *         description: Property not found
+ */
+router.patch("/:id/unarchive", asyncHandler(unarchiveProperty))
 
 export default router

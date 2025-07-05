@@ -65,6 +65,26 @@ export class PropertyQueryBuilder {
   }
 
   /**
+   * Add combined location and title search filter
+   * Uses indexes: { "location.city": 1 }, { "location.address": 1 }, { title: 1 }
+   */
+  addLocationAndTitleFilter(searchTerm: string): this {
+    if (searchTerm) {
+      this.query.$or = [
+        // Exact city match (highest priority)
+        { "location.city": { $regex: `^${searchTerm}$`, $options: "i" } },
+        // City contains search term
+        { "location.city": { $regex: searchTerm, $options: "i" } },
+        // Address contains search term
+        { "location.address": { $regex: searchTerm, $options: "i" } },
+        // Title contains search term
+        { title: { $regex: searchTerm, $options: "i" } },
+      ]
+    }
+    return this
+  }
+
+  /**
    * Add exact city filter (uses index: { "location.city": 1 })
    */
   addCityFilter(city: string): this {

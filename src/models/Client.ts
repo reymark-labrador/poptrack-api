@@ -9,8 +9,8 @@ export interface IClient extends Document {
 }
 
 const clientSchema = new Schema<IClient>({
-  name: { type: String },
-  email: { type: String },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
   phone: String,
   viewings: [{ type: Schema.Types.ObjectId, ref: "Viewing" }],
   createdAt: { type: Date, default: Date.now },

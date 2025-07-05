@@ -9,7 +9,7 @@ export const submitLead = async (req: Request, res: Response) => {
   const { name, email, phone, message, property } = req.body
 
   const lead = await Lead.create({ name, email, phone, message, property })
-  res.status(201).json({ message: "Lead submitted", lead })
+  res.status(201).json({ message: "Lead submitted", lead: lead.toObject() })
 }
 
 export const getLeads = async (req: Request, res: Response) => {
@@ -52,7 +52,10 @@ export const convertLeadToClientAndSchedule = async (
   lead.convertedToClient = client._id as mongoose.Types.ObjectId
   await lead.save()
 
-  res
-    .status(201)
-    .json({ message: "Lead converted & viewing scheduled", viewing })
+  res.status(201).json({
+    message: "Lead converted & viewing scheduled",
+    viewing: viewing.toObject(),
+    client: client.toObject(),
+    lead: lead.toObject(),
+  })
 }

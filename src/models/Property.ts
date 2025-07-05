@@ -4,7 +4,7 @@ export interface IProperty extends Document {
   title: string
   description?: string
   price: number
-  type: "apartment" | "house" | "villa" | "commercial"
+  type: "sale" | "rent"
   location: {
     address?: string
     city: string
@@ -18,6 +18,7 @@ export interface IProperty extends Document {
   bathrooms?: number
   area?: number
   createdAt: Date
+  archived?: boolean
 }
 
 const propertySchema = new Schema<IProperty>({
@@ -26,7 +27,7 @@ const propertySchema = new Schema<IProperty>({
   price: { type: Number, required: true },
   type: {
     type: String,
-    enum: ["apartment", "house", "villa", "commercial"],
+    enum: ["sale", "rent"],
     required: true,
   },
   location: {
@@ -45,6 +46,7 @@ const propertySchema = new Schema<IProperty>({
   bathrooms: Number,
   area: Number,
   createdAt: { type: Date, default: Date.now },
+  archived: { type: Boolean, default: false },
 })
 
 // Performance Indexes for Property Search

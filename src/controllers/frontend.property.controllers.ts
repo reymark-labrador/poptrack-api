@@ -17,7 +17,7 @@ export const getProperties = async (req: Request, res: Response) => {
     bedrooms,
     bathrooms,
     amenities,
-    searchTerm,
+    location,
     archived,
   } = req.query
 
@@ -31,7 +31,7 @@ export const getProperties = async (req: Request, res: Response) => {
 
   // Add filters in order of selectivity (most selective first)
   if (type) queryBuilder.addTypeFilter(type as string)
-  if (searchTerm) queryBuilder.addLocationAndTitleFilter(searchTerm as string)
+  if (location) queryBuilder.addLocationFilter(location as string)
   if (city) queryBuilder.addCityFilter(city as string)
   if (minPrice || maxPrice) {
     queryBuilder.addPriceFilter(
@@ -63,24 +63,18 @@ export const getProperties = async (req: Request, res: Response) => {
   // Log performance metrics
   monitor.log("Property search query")
 
-  // Ensure all documents are properly serialized with _id
-  const serializedData = result.data.map((property) => property.toObject())
-
-  res.json({
-    ...result,
-    data: serializedData,
-  })
+  res.json(result)
 }
 
 export const getPropertyById = async (req: Request, res: Response) => {
   const property = await Property.findById(req.params.id)
   if (!property) return res.status(404).json({ message: "Property not found" })
-  res.json(property.toObject())
+  res.json(property)
 }
 
 export const createProperty = async (req: Request, res: Response) => {
   const property = await Property.create(req.body)
-  res.status(201).json(property.toObject())
+  res.status(201).json(property)
 }
 
 export const updateProperty = async (req: Request, res: Response) => {
@@ -88,7 +82,7 @@ export const updateProperty = async (req: Request, res: Response) => {
     new: true,
   })
   if (!property) return res.status(404).json({ message: "Property not found" })
-  res.json(property.toObject())
+  res.json(property)
 }
 
 export const deleteProperty = async (req: Request, res: Response) => {
