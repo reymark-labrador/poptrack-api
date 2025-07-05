@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from "express"
+import { corsMiddleware } from "./config/cors"
 
 import propertyRoutes from "./routes/property.routes"
 import clientRoutes from "./routes/client.routes"
@@ -6,6 +7,10 @@ import viewingRoutes from "./routes/viewing.routes"
 import leadRoutes from "./routes/lead.routes"
 
 const app: Application = express()
+
+// Apply CORS middleware
+app.use(corsMiddleware)
+
 app.use(express.json())
 
 app.get("/", (req: Request, res: Response) => {
