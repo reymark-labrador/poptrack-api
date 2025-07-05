@@ -114,7 +114,12 @@ const router = Router()
  *         name: city
  *         schema:
  *           type: string
- *         description: Filter by city
+ *         description: Filter by exact city name
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *         description: Search by location (searches both city and address fields)
  *       - in: query
  *         name: minPrice
  *         schema:

@@ -1,29 +1,58 @@
 import { Request, Response } from "express"
 import Property from "../models/Property"
 import { createPaginatedResponse } from "../utils/pagination"
+import {
+  PropertyQueryBuilder,
+  createPerformanceMonitor,
+} from "../utils/queryOptimizer"
 
 export const getProperties = async (req: Request, res: Response) => {
-  const { type, city, minPrice, maxPrice, bedrooms, bathrooms, amenities } =
-    req.query
+  const monitor = createPerformanceMonitor()
 
-  const query: any = {}
-  if (type) query.type = type
-  if (city) query["location.city"] = city
+  const {
+    type,
+    city,
+    minPrice,
+    maxPrice,
+    bedrooms,
+    bathrooms,
+    amenities,
+    location,
+  } = req.query
+
+  // Build optimized query using the query builder
+  const queryBuilder = new PropertyQueryBuilder({
+    maxLimit: 100,
+    defaultLimit: 10,
+    enableTextSearch: false,
+    enableGeospatial: false,
+  })
+
+  // Add filters in order of selectivity (most selective first)
+  if (type) queryBuilder.addTypeFilter(type as string)
+  if (location) queryBuilder.addLocationFilter(location as string)
+  if (city) queryBuilder.addCityFilter(city as string)
   if (minPrice || maxPrice) {
-    query.price = {}
-    if (minPrice) query.price.$gte = Number(minPrice)
-    if (maxPrice) query.price.$lte = Number(maxPrice)
+    queryBuilder.addPriceFilter(
+      minPrice ? Number(minPrice) : undefined,
+      maxPrice ? Number(maxPrice) : undefined
+    )
   }
-  if (bedrooms) query.bedrooms = Number(bedrooms)
-  if (bathrooms) query.bathrooms = Number(bathrooms)
+  if (bedrooms) queryBuilder.addBedroomFilter(Number(bedrooms))
+  if (bathrooms) queryBuilder.addBathroomFilter(Number(bathrooms))
   if (amenities) {
-    const list = Array.isArray(amenities) ? amenities : [amenities]
-    query.amenities = { $all: list }
+    const amenitiesList = Array.isArray(amenities) ? amenities : [amenities]
+    queryBuilder.addAmenitiesFilter(amenitiesList as string[])
   }
+
+  const query = queryBuilder.build()
 
   const result = await createPaginatedResponse(req, Property, query, {
     sort: { createdAt: -1 }, // Sort by newest first
   })
+
+  // Log performance metrics
+  monitor.log("Property search query")
 
   res.json(result)
 }
