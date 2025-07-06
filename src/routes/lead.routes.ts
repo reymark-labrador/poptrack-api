@@ -163,12 +163,18 @@ router.get("/", asyncHandler(getLeads))
  *         application/json:
  *           schema:
  *             type: object
- *             required: [scheduledAt]
+ *             required: [date, time]
  *             properties:
- *               scheduledAt:
+ *               date:
  *                 type: string
- *                 format: date-time
- *                 description: Date and time for the viewing
+ *                 format: date
+ *                 description: Date for the viewing (YYYY-MM-DD)
+ *                 example: "2024-01-15"
+ *               time:
+ *                 type: string
+ *                 pattern: "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+ *                 description: Time for the viewing (HH:MM in 24-hour format)
+ *                 example: "14:30"
  *     responses:
  *       201:
  *         description: Lead converted and viewing scheduled

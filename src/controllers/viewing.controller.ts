@@ -21,15 +21,18 @@ export const updateViewing = async (req: Request, res: Response) => {
 }
 
 export const getAllViewings = async (req: Request, res: Response) => {
-  const result = await createPaginatedResponse(
-    req,
-    Viewing,
-    {},
-    {
-      populate: ["client", "property"],
-      sort: { scheduledAt: 1 }, // Sort by scheduled date (earliest first)
-    }
-  )
+  const { status } = req.query
+
+  // Build query object for filtering
+  const query: any = {}
+  if (status) {
+    query.status = status
+  }
+
+  const result = await createPaginatedResponse(req, Viewing, query, {
+    populate: ["client", "property"],
+    sort: { scheduledAt: 1 }, // Sort by scheduled date (earliest first)
+  })
 
   res.json(result)
 }

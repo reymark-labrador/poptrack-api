@@ -30,6 +30,27 @@ export const convertLeadToClientAndSchedule = async (
   req: Request,
   res: Response
 ) => {
+  const { date, time } = req.body
+
+  // Validate required fields
+  if (!date || !time) {
+    return res.status(400).json({
+      message: "Both date and time are required",
+      error: "Missing required fields: date and time",
+    })
+  }
+
+  // Combine date and time into a single Date object
+  const scheduledAt = new Date(`${date}T${time}`)
+
+  // Validate the combined date
+  if (isNaN(scheduledAt.getTime())) {
+    return res.status(400).json({
+      message: "Invalid date or time format",
+      error: "Please provide valid date (YYYY-MM-DD) and time (HH:MM) formats",
+    })
+  }
+
   const lead = await Lead.findById(req.params.leadId).populate("property")
   if (!lead) return res.status(404).json({ message: "Lead not found" })
 
@@ -45,7 +66,7 @@ export const convertLeadToClientAndSchedule = async (
   const viewing = await Viewing.create({
     client: client._id,
     property: lead.property._id,
-    scheduledAt: req.body.scheduledAt,
+    scheduledAt: scheduledAt,
   })
 
   lead.status = "converted"
