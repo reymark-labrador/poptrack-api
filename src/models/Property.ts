@@ -10,7 +10,7 @@ export interface IProperty extends Document {
     city: string
     state?: string
     country?: string
-    coordinates?: { lat: number; lng: number }
+    coordinates?: [number, number] // [longitude, latitude] for MongoDB 2dsphere
   }
   amenities: string[]
   images: string[]
@@ -36,8 +36,19 @@ const propertySchema = new Schema<IProperty>({
     state: String,
     country: String,
     coordinates: {
-      lat: Number,
-      lng: Number,
+      type: [Number], // [longitude, latitude] array
+      validate: {
+        validator: function (coords: number[]) {
+          return (
+            coords.length === 2 &&
+            coords[0] >= -180 &&
+            coords[0] <= 180 && // longitude
+            coords[1] >= -90 &&
+            coords[1] <= 90
+          ) // latitude
+        },
+        message: "Coordinates must be [longitude, latitude] with valid ranges",
+      },
     },
   },
   amenities: [String],

@@ -84,7 +84,12 @@ export const createProperty = async (req: Request, res: Response) => {
 
     // Validate and format coordinates if provided
     if (propertyData.location?.coordinates) {
-      const { lat, lng } = propertyData.location.coordinates
+      let { lat, lng } = propertyData.location.coordinates
+
+      // Handle both object format {lat, lng} and array format [lng, lat]
+      if (Array.isArray(propertyData.location.coordinates)) {
+        ;[lng, lat] = propertyData.location.coordinates
+      }
 
       // Validate latitude (must be between -90 and 90)
       if (lat !== undefined && (isNaN(lat) || lat < -90 || lat > 90)) {
@@ -100,9 +105,8 @@ export const createProperty = async (req: Request, res: Response) => {
         })
       }
 
-      // Ensure coordinates are numbers
-      if (lat !== undefined) propertyData.location.coordinates.lat = Number(lat)
-      if (lng !== undefined) propertyData.location.coordinates.lng = Number(lng)
+      // Convert to MongoDB format: [longitude, latitude]
+      propertyData.location.coordinates = [Number(lng), Number(lat)]
     }
 
     const property = await Property.create(propertyData)
@@ -122,7 +126,12 @@ export const updateProperty = async (req: Request, res: Response) => {
 
     // Validate and format coordinates if provided
     if (updateData.location?.coordinates) {
-      const { lat, lng } = updateData.location.coordinates
+      let { lat, lng } = updateData.location.coordinates
+
+      // Handle both object format {lat, lng} and array format [lng, lat]
+      if (Array.isArray(updateData.location.coordinates)) {
+        ;[lng, lat] = updateData.location.coordinates
+      }
 
       // Validate latitude (must be between -90 and 90)
       if (lat !== undefined && (isNaN(lat) || lat < -90 || lat > 90)) {
@@ -138,9 +147,8 @@ export const updateProperty = async (req: Request, res: Response) => {
         })
       }
 
-      // Ensure coordinates are numbers
-      if (lat !== undefined) updateData.location.coordinates.lat = Number(lat)
-      if (lng !== undefined) updateData.location.coordinates.lng = Number(lng)
+      // Convert to MongoDB format: [longitude, latitude]
+      updateData.location.coordinates = [Number(lng), Number(lat)]
     }
 
     const property = await Property.findByIdAndUpdate(

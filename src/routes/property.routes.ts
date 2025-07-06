@@ -52,16 +52,13 @@ const router = Router()
  *               type: string
  *               example: "USA"
  *             coordinates:
- *               type: object
- *               properties:
- *                 lat:
- *                   type: number
- *                   description: Latitude (must be between -90 and 90)
- *                   example: 40.7128
- *                 lng:
- *                   type: number
- *                   description: Longitude (must be between -180 and 180)
- *                   example: -74.0060
+ *               type: array
+ *               items:
+ *                 type: number
+ *               minItems: 2
+ *               maxItems: 2
+ *               description: "[longitude, latitude] array for MongoDB geospatial queries"
+ *               example: [-74.0060, 40.7128]
  *         bedrooms:
  *           type: number
  *           example: 2
