@@ -9,21 +9,19 @@ A property management backend API built with Node.js, Express, TypeScript, and M
 ### Prerequisites
 
 - Node.js (v16+ recommended)
-- npm or yarn
+- npm
 - MongoDB (local or remote instance)
 
 ### Installation
 
 1. **Clone the repository:**
    ```bash
-   git clone <repo-url>
+   git clone https://github.com/reymark-labrador/poptrack-api.git
    cd poptrack-api
    ```
 2. **Install dependencies:**
    ```bash
    npm install
-   # or
-   yarn install
    ```
 3. **Set up environment variables:**
 
@@ -37,14 +35,24 @@ A property management backend API built with Node.js, Express, TypeScript, and M
 
    ```bash
    npm run local
-   # or
-   yarn local
    ```
 
-   The API will be running at [http://localhost:3000](http://localhost:3000)
+   The API will be running at [http://localhost:5000](http://localhost:5000)
 
 5. **API Documentation:**
-   - Swagger UI is available at [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+   - Swagger UI is available at [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+
+### MongoDB URI
+
+You can use the following sample configuration in your `.env.local` file:
+
+```
+MONGO_URI=mongodb+srv://admin:XIkR2NRZnO9Q2T3@poptrack-staging.no9pszz.mongodb.net/poptrack?retryWrites=true&w=majority&appName=poptrack-staging
+DB_NAME=poptrack
+PORT=5000
+```
+
+_This URI and configuration were used for testing during development._
 
 ---
 
@@ -59,6 +67,7 @@ A property management backend API built with Node.js, Express, TypeScript, and M
 - MongoDB is available and accessible at the URI provided in the environment variables.
 - The API is primarily for backend use; no frontend is included in this repository.
 - Environment variables are managed via `.env` files as per the example.
+- MongoDB indexing is used to optimize queries on properties for better performance.
 
 ---
 
