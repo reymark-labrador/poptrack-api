@@ -8,6 +8,7 @@ import {
   deleteProperty,
   archiveProperty,
   unarchiveProperty,
+  convertAndSchedule,
 } from "../controllers/property.controllers"
 
 const router = Router()
@@ -325,5 +326,61 @@ router.patch("/:id/archive", asyncHandler(archiveProperty))
  *         description: Property not found
  */
 router.patch("/:id/unarchive", asyncHandler(unarchiveProperty))
+
+/**
+ * @swagger
+ * /api/properties/{id}/convert-and-schedule:
+ *   post:
+ *     summary: Convert a lead to a viewing and schedule it
+ *     tags: [Properties]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Property ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [clientId, scheduledAt]
+ *             properties:
+ *               clientId:
+ *                 type: string
+ *                 description: Client ID
+ *                 example: "60d0fe4f5311236168a109ca"
+ *               scheduledAt:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Scheduled viewing date and time
+ *                 example: "2024-06-01T10:00:00.000Z"
+ *               notes:
+ *                 type: string
+ *                 description: Optional notes for the viewing
+ *                 example: "Client requested a morning viewing"
+ *     responses:
+ *       201:
+ *         description: Lead converted to viewing and scheduled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lead converted to viewing and scheduled successfully"
+ *                 viewing:
+ *                   $ref: '#/components/schemas/Viewing'
+ *       400:
+ *         description: Invalid input - missing required fields
+ *       404:
+ *         description: Property not found
+ *       500:
+ *         description: Server error
+ */
+router.post("/:id/convert-and-schedule", asyncHandler(convertAndSchedule))
 
 export default router

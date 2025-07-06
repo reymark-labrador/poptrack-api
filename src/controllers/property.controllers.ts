@@ -116,3 +116,49 @@ export const unarchiveProperty = async (req: Request, res: Response) => {
   if (!property) return res.status(404).json({ message: "Property not found" })
   res.json({ message: "Property unarchived" })
 }
+
+export const convertAndSchedule = async (req: Request, res: Response) => {
+  try {
+    const { propertyId } = req.params
+    const { clientId, scheduledAt, notes } = req.body
+
+    // Validate required fields
+    if (!clientId || !scheduledAt) {
+      return res.status(400).json({
+        message: "Client ID and scheduled date are required",
+      })
+    }
+
+    // Check if property exists
+    const property = await Property.findById(propertyId)
+    if (!property) {
+      return res.status(404).json({ message: "Property not found" })
+    }
+
+    // Import Viewing model here to avoid circular dependencies
+    const Viewing = (await import("../models/Viewing")).default
+
+    // Create a new viewing
+    const viewing = await Viewing.create({
+      client: clientId,
+      property: propertyId,
+      scheduledAt: new Date(scheduledAt),
+      status: "scheduled",
+      notes: notes || "",
+    })
+
+    // Populate the viewing with client and property details
+    await viewing.populate(["client", "property"])
+
+    res.status(201).json({
+      message: "Lead converted to viewing and scheduled successfully",
+      viewing: viewing.toObject(),
+    })
+  } catch (error) {
+    console.error("Error converting and scheduling:", error)
+    res.status(500).json({
+      message: "Failed to convert and schedule viewing",
+      error: error instanceof Error ? error.message : "Unknown error",
+    })
+  }
+}
