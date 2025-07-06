@@ -45,6 +45,23 @@ const router = Router()
  *             address:
  *               type: string
  *               example: "123 Main St"
+ *             state:
+ *               type: string
+ *               example: "NY"
+ *             country:
+ *               type: string
+ *               example: "USA"
+ *             coordinates:
+ *               type: object
+ *               properties:
+ *                 lat:
+ *                   type: number
+ *                   description: Latitude (must be between -90 and 90)
+ *                   example: 40.7128
+ *                 lng:
+ *                   type: number
+ *                   description: Longitude (must be between -180 and 180)
+ *                   example: -74.0060
  *         bedrooms:
  *           type: number
  *           example: 2
@@ -206,8 +223,28 @@ router.get("/:id", asyncHandler(getPropertyById))
  *               $ref: '#/components/schemas/Property'
  *       400:
  *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Latitude must be a valid number between -90 and 90"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to create property"
+ *                 error:
+ *                   type: string
  */
-router.post("/", createProperty)
+router.post("/", asyncHandler(createProperty))
 
 /**
  * @swagger
@@ -235,8 +272,30 @@ router.post("/", createProperty)
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Property'
+ *       400:
+ *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Latitude must be a valid number between -90 and 90"
  *       404:
  *         description: Property not found
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to update property"
+ *                 error:
+ *                   type: string
  */
 router.put("/:id", asyncHandler(updateProperty))
 

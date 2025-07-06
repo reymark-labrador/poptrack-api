@@ -79,16 +79,87 @@ export const getPropertyById = async (req: Request, res: Response) => {
 }
 
 export const createProperty = async (req: Request, res: Response) => {
-  const property = await Property.create(req.body)
-  res.status(201).json(property.toObject())
+  try {
+    const propertyData = { ...req.body }
+
+    // Validate and format coordinates if provided
+    if (propertyData.location?.coordinates) {
+      const { lat, lng } = propertyData.location.coordinates
+
+      // Validate latitude (must be between -90 and 90)
+      if (lat !== undefined && (isNaN(lat) || lat < -90 || lat > 90)) {
+        return res.status(400).json({
+          message: "Latitude must be a valid number between -90 and 90",
+        })
+      }
+
+      // Validate longitude (must be between -180 and 180)
+      if (lng !== undefined && (isNaN(lng) || lng < -180 || lng > 180)) {
+        return res.status(400).json({
+          message: "Longitude must be a valid number between -180 and 180",
+        })
+      }
+
+      // Ensure coordinates are numbers
+      if (lat !== undefined) propertyData.location.coordinates.lat = Number(lat)
+      if (lng !== undefined) propertyData.location.coordinates.lng = Number(lng)
+    }
+
+    const property = await Property.create(propertyData)
+    res.status(201).json(property.toObject())
+  } catch (error) {
+    console.error("Error creating property:", error)
+    res.status(500).json({
+      message: "Failed to create property",
+      error: error instanceof Error ? error.message : "Unknown error",
+    })
+  }
 }
 
 export const updateProperty = async (req: Request, res: Response) => {
-  const property = await Property.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  })
-  if (!property) return res.status(404).json({ message: "Property not found" })
-  res.json(property.toObject())
+  try {
+    const updateData = { ...req.body }
+
+    // Validate and format coordinates if provided
+    if (updateData.location?.coordinates) {
+      const { lat, lng } = updateData.location.coordinates
+
+      // Validate latitude (must be between -90 and 90)
+      if (lat !== undefined && (isNaN(lat) || lat < -90 || lat > 90)) {
+        return res.status(400).json({
+          message: "Latitude must be a valid number between -90 and 90",
+        })
+      }
+
+      // Validate longitude (must be between -180 and 180)
+      if (lng !== undefined && (isNaN(lng) || lng < -180 || lng > 180)) {
+        return res.status(400).json({
+          message: "Longitude must be a valid number between -180 and 180",
+        })
+      }
+
+      // Ensure coordinates are numbers
+      if (lat !== undefined) updateData.location.coordinates.lat = Number(lat)
+      if (lng !== undefined) updateData.location.coordinates.lng = Number(lng)
+    }
+
+    const property = await Property.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      {
+        new: true,
+      }
+    )
+    if (!property)
+      return res.status(404).json({ message: "Property not found" })
+    res.json(property.toObject())
+  } catch (error) {
+    console.error("Error updating property:", error)
+    res.status(500).json({
+      message: "Failed to update property",
+      error: error instanceof Error ? error.message : "Unknown error",
+    })
+  }
 }
 
 export const deleteProperty = async (req: Request, res: Response) => {
