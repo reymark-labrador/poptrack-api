@@ -115,11 +115,16 @@ export class PropertyQueryBuilder {
   }
 
   /**
-   * Add amenities filter (uses index: { amenities: 1 })
+   * Add amenities filter (case-insensitive, supports multiple amenities)
    */
   addAmenitiesFilter(amenities: string[]): this {
     if (amenities && amenities.length > 0) {
-      this.query.amenities = { $all: amenities }
+      // Build an $and array of $elemMatch regex queries for each amenity
+      this.query.$and = (this.query.$and || []).concat(
+        amenities.map((amenity) => ({
+          amenities: { $elemMatch: { $regex: `^${amenity}$`, $options: "i" } },
+        }))
+      )
     }
     return this
   }
@@ -201,6 +206,34 @@ export const createPerformanceMonitor = () => {
       return duration
     },
   }
+}
+
+/**
+ * Parses the amenities query parameter into a string array.
+ * Handles both comma-separated strings and arrays (from repeated query params).
+ * @param amenities The amenities query param from req.query
+ * @returns string[]
+ */
+export function parseAmenitiesQuery(amenities: unknown): string[] {
+  if (!amenities) return []
+  if (Array.isArray(amenities)) {
+    // Flatten any comma-separated values in the array
+    return amenities.flatMap((item) =>
+      typeof item === "string"
+        ? item
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : []
+    )
+  }
+  if (typeof amenities === "string") {
+    return amenities
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  }
+  return []
 }
 
 /**
