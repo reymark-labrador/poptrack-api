@@ -4,6 +4,7 @@ import { createPaginatedResponse } from "../utils/pagination"
 import {
   PropertyQueryBuilder,
   createPerformanceMonitor,
+  parseAmenitiesQuery,
 } from "../utils/queryOptimizer"
 
 export const getProperties = async (req: Request, res: Response) => {
@@ -42,8 +43,8 @@ export const getProperties = async (req: Request, res: Response) => {
   if (bedrooms) queryBuilder.addBedroomFilter(Number(bedrooms))
   if (bathrooms) queryBuilder.addBathroomFilter(Number(bathrooms))
   if (amenities) {
-    const amenitiesList = Array.isArray(amenities) ? amenities : [amenities]
-    queryBuilder.addAmenitiesFilter(amenitiesList as string[])
+    const amenitiesList = parseAmenitiesQuery(amenities)
+    queryBuilder.addAmenitiesFilter(amenitiesList)
   }
 
   const query = queryBuilder.build()
