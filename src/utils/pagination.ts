@@ -28,9 +28,13 @@ export interface PaginationQuery {
 export const getPaginationParams = (req: Request): PaginationOptions => {
   const { page = 1, limit = 10 } = req.query as PaginationQuery
 
+  // Validate and set defaults for invalid values
+  const pageNum = +page
+  const limitNum = +limit
+
   return {
-    page: +page,
-    limit: +limit,
+    page: isNaN(pageNum) || pageNum < 1 ? 1 : pageNum,
+    limit: isNaN(limitNum) || limitNum < 1 ? 10 : limitNum,
   }
 }
 

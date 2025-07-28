@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import Property from "../models/Property"
 import { createPaginatedResponse } from "../utils/pagination"
+import mongoose from "mongoose"
 import {
   PropertyQueryBuilder,
   createPerformanceMonitor,
@@ -74,9 +75,21 @@ export const getProperties = async (req: Request, res: Response) => {
 }
 
 export const getPropertyById = async (req: Request, res: Response) => {
-  const property = await Property.findById(req.params.id)
-  if (!property) return res.status(404).json({ message: "Property not found" })
-  res.json(property.toObject())
+  try {
+    const property = await Property.findById(req.params.id)
+    if (!property)
+      return res.status(404).json({ message: "Property not found" })
+    res.json(property.toObject())
+  } catch (error) {
+    if (error instanceof Error && error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid property ID format" })
+    }
+    console.error("Error getting property:", error)
+    res.status(500).json({
+      message: "Failed to get property",
+      error: error instanceof Error ? error.message : "Unknown error",
+    })
+  }
 }
 
 export const createProperty = async (req: Request, res: Response) => {
@@ -114,6 +127,15 @@ export const createProperty = async (req: Request, res: Response) => {
     res.status(201).json(property.toObject())
   } catch (error) {
     console.error("Error creating property:", error)
+
+    // Handle Mongoose validation errors
+    if (error instanceof Error && error.name === "ValidationError") {
+      return res.status(400).json({
+        message: "Validation failed",
+        error: error.message,
+      })
+    }
+
     res.status(500).json({
       message: "Failed to create property",
       error: error instanceof Error ? error.message : "Unknown error",
@@ -163,6 +185,9 @@ export const updateProperty = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Property not found" })
     res.json(property.toObject())
   } catch (error) {
+    if (error instanceof Error && error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid property ID format" })
+    }
     console.error("Error updating property:", error)
     res.status(500).json({
       message: "Failed to update property",
@@ -172,29 +197,65 @@ export const updateProperty = async (req: Request, res: Response) => {
 }
 
 export const deleteProperty = async (req: Request, res: Response) => {
-  const property = await Property.findByIdAndDelete(req.params.id)
-  if (!property) return res.status(404).json({ message: "Property not found" })
-  res.json({ message: "Property deleted" })
+  try {
+    const property = await Property.findByIdAndDelete(req.params.id)
+    if (!property)
+      return res.status(404).json({ message: "Property not found" })
+    res.json({ message: "Property deleted" })
+  } catch (error) {
+    if (error instanceof Error && error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid property ID format" })
+    }
+    console.error("Error deleting property:", error)
+    res.status(500).json({
+      message: "Failed to delete property",
+      error: error instanceof Error ? error.message : "Unknown error",
+    })
+  }
 }
 
 export const archiveProperty = async (req: Request, res: Response) => {
-  const property = await Property.findByIdAndUpdate(
-    req.params.id,
-    { archived: true },
-    { new: true }
-  )
-  if (!property) return res.status(404).json({ message: "Property not found" })
-  res.json({ message: "Property archived" })
+  try {
+    const property = await Property.findByIdAndUpdate(
+      req.params.id,
+      { archived: true },
+      { new: true }
+    )
+    if (!property)
+      return res.status(404).json({ message: "Property not found" })
+    res.json({ message: "Property archived" })
+  } catch (error) {
+    if (error instanceof Error && error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid property ID format" })
+    }
+    console.error("Error archiving property:", error)
+    res.status(500).json({
+      message: "Failed to archive property",
+      error: error instanceof Error ? error.message : "Unknown error",
+    })
+  }
 }
 
 export const unarchiveProperty = async (req: Request, res: Response) => {
-  const property = await Property.findByIdAndUpdate(
-    req.params.id,
-    { archived: false },
-    { new: true }
-  )
-  if (!property) return res.status(404).json({ message: "Property not found" })
-  res.json({ message: "Property unarchived" })
+  try {
+    const property = await Property.findByIdAndUpdate(
+      req.params.id,
+      { archived: false },
+      { new: true }
+    )
+    if (!property)
+      return res.status(404).json({ message: "Property not found" })
+    res.json({ message: "Property unarchived" })
+  } catch (error) {
+    if (error instanceof Error && error.name === "CastError") {
+      return res.status(400).json({ message: "Invalid property ID format" })
+    }
+    console.error("Error unarchiving property:", error)
+    res.status(500).json({
+      message: "Failed to unarchive property",
+      error: error instanceof Error ? error.message : "Unknown error",
+    })
+  }
 }
 
 export const convertAndSchedule = async (req: Request, res: Response) => {
